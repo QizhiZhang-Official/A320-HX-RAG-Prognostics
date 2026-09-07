@@ -1,0 +1,27 @@
+import os
+import yaml
+
+
+class ManualRegistry:
+    def __init__(self, registry_path=os.path.join("configs", "manual_registry.yaml")):
+        self.registry_path = registry_path
+        self.manuals = None
+
+        self._load_registry()
+
+    def _load_registry(self):
+        with open(self.registry_path, "r") as f:
+            registry = yaml.safe_load(f)
+        self.manuals = registry
+
+    def __iter__(self):
+        return iter(self.manuals)
+
+    def __len__(self):
+        return len(self.manuals)
+
+    def get(self, manual_id):
+        for manual in self.manuals:
+            if manual["manual_id"] == manual_id:
+                return manual
+        return None
