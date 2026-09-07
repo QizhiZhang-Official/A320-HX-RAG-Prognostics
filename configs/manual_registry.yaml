@@ -1,0 +1,21 @@
+# configs/manual_registry.yaml
+manuals:
+  - manual_id: CMM-21-52-11
+    ata: "21-52-11"
+    component: Primary Heat Exchanger
+    oem: Liebherr-Aerospace Toulouse
+    ref: 21-52-11-R
+    issue: "02"
+    issue_date: 2022-10-13
+    file_tag: "753"
+    file: data/manuals/21-52-11-R.pdf
+
+  - manual_id: CMM-21-52-12
+    ata: "21-52-12"
+    component: Main Heat Exchanger
+    oem: Liebherr-Aerospace Toulouse
+    ref: 21-52-12-R
+    issue: "02"
+    issue_date: 2022-06-23
+    file_tag: "754"
+    file: data/manuals/21-52-12-R.pdf
