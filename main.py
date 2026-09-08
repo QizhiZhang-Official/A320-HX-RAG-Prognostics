@@ -4,6 +4,7 @@ import os
 from src.rag.common.registry import ManualRegistry
 from src.rag.ingestion.inspect_pdf import PDFInspector
 from src.rag.ingestion.extract import PageExtractor
+from src.rag.ingestion.chunk import ChunkBuilder
 
 
 def cmd_inspect(args):
@@ -22,6 +23,11 @@ def cmd_extract(args):
     page_extractor.save(save_path="outputs/pages.jsonl")
 
 
+def cmd_chunk(args):
+    chunk_builder = ChunkBuilder()
+    chunk_builder.build()
+
+
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="main.py", description="A320 HeatExchanger RAG pipeline CLI"
@@ -34,6 +40,9 @@ def build_parser():
 
     p_extract = subparsers.add_parser("extract")
     p_extract.set_defaults(func=cmd_extract)
+
+    p_chunk = subparsers.add_parser("chunk")
+    p_chunk.set_defaults(func=cmd_chunk)
 
     return parser
 

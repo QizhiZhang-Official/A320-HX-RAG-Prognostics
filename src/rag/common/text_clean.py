@@ -1,3 +1,4 @@
+# /src/rag/common/text_clean.py
 import re
 
 
@@ -9,24 +10,43 @@ WATERMARK_RE = re.compile(
     re.I,
 )
 
-HEADER_RE = re.compile(r"^COMPONENT REPAIR MANUAL\s*753ABC SERIES\s*$", re.I)
+HEADER_LINE_RE = re.compile(
+    r"(^COMPONENT REPAIR MANUAL$"
+    r"|^\d{3}ABC SERIES$)",
+    re.I,
+)
 
-FOOTER_RE = re.compile(r"^\d{2}-\d{2}-\d{2}\S*\s+_\S*\s+Page\s+\d+", re.I)
+FOOTER_LINE_RE = re.compile(
+    r"(^\d{2}-\d{2}-\d{2}R?M?$"
+    r"|^_[A-Z0-9 ]*$"
+    r"|^Page \d+$"
+    r"|^[a-zA-Z]?[A-Z][a-z]{2} \d{1,2}/\d{2}$)",
+    re.I,
+)
 
-BLANK_RE = re.compile(r"^This page intentionally left blank\.?$", re.I)
+BLANK_LINE_RE = re.compile(r"^This page intentionally left blank\.?$", re.I)
 
+MANUAL_PAGE_RE = re.compile(r"^Page\s+(\d+)$", re.I)
 
 def clean_page_text(raw):
     lines = []
-    for ln in raw.splitlines():
-        s = ln.strip()
+    for line in raw.splitlines():
+        s = line.strip()
         if WATERMARK_RE.search(s):
             continue
-        if HEADER_RE.match(s):
+        if HEADER_LINE_RE.match(s):
             continue
-        if FOOTER_RE.match(s):
+        if FOOTER_LINE_RE.match(s):
             continue
-        if BLANK_RE.match(s):
+        if BLANK_LINE_RE.match(s):
             continue
-        lines.append(ln)
+        lines.append(line)
     return "\n".join(lines).strip()
+
+
+def extract_manual_page(raw):
+    for line in raw.splitlines():
+        manual = MANUAL_PAGE_RE.match(line.strip())
+        if manual:
+            return int(manual.group(1))
+    return None

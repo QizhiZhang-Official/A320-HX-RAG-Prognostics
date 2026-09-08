@@ -3,7 +3,7 @@ import pymupdf
 
 from src.rag.common.io import write_jsonl
 from src.rag.common.registry import ManualRegistry
-from src.rag.common.text_clean import clean_page_text
+from src.rag.common.text_clean import clean_page_text, extract_manual_page
 
 
 class PageExtractor:
@@ -15,7 +15,9 @@ class PageExtractor:
         pages = []
         doc = pymupdf.open(manual["file_path"])
         for i, page in enumerate(doc):
-            text = clean_page_text(page.get_text())
+            raw = page.get_text()
+            manual_page = extract_manual_page(raw=raw)
+            text = clean_page_text(raw)
             if not text:
                 continue
             pages.append(
@@ -25,6 +27,7 @@ class PageExtractor:
                     "component": manual["component"],
                     "issue": manual["issue"],
                     "page": i + 1,
+                    "manual_page": manual_page,
                     "text": text,
                 }
             )
