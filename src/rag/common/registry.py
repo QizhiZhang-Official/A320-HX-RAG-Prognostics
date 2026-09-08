@@ -12,7 +12,7 @@ class ManualRegistry:
     def _load_registry(self):
         with open(self.registry_path, "r") as f:
             registry = yaml.safe_load(f)
-        self.manuals = registry
+        self.manuals = registry['manuals']
 
     def __iter__(self):
         return iter(self.manuals)

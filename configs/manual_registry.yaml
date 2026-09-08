@@ -8,7 +8,7 @@ manuals:
     issue: "02"
     issue_date: 2022-10-13
     file_tag: "753"
-    file: data/manuals/21-52-11-R.pdf
+    file_path: data/manuals/21-52-11-R.pdf
 
   - manual_id: CMM-21-52-12
     ata: "21-52-12"
@@ -18,4 +18,4 @@ manuals:
     issue: "02"
     issue_date: 2022-06-23
     file_tag: "754"
-    file: data/manuals/21-52-12-R.pdf
+    file_path: data/manuals/21-52-12-R.pdf
