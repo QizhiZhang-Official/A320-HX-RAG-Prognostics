@@ -1,0 +1,5 @@
+# configs/path.yaml
+
+models:
+  bge-m3: /home/qizhi/models/bge-m3/
+  Qwen2.5-7B-Instrcut: /home/qizhi/models/Qwen2.5-7B-Instrcut/
