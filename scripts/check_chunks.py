@@ -43,4 +43,10 @@ print("chunks with TEN PER CENT:", hit_ten)
 # 5) 21-52-12 的 SPECIAL TOOLS 页必须归类正确
 for c in chunks:
     if c["manual_id"] == "CMM-21-52-12" and c["manual_page_start"] >= 9000:
-        print(c["chunk_id"], c["section"], c["manual_page_start"], "-", c["manual_page_end"])
+        print(
+            c["chunk_id"],
+            c["section"],
+            c["manual_page_start"],
+            "-",
+            c["manual_page_end"],
+        )
