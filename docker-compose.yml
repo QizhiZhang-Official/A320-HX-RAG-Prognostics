@@ -1,0 +1,22 @@
+name: a320-hx-rag-prognostics
+
+services:
+  db:
+    image: pgvector/pgvector:pg18-trixie
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ragnostics
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: ragnostics
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./docker/pgdata:/var/lib/postgresql
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ragnostics -d ragnostics"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s

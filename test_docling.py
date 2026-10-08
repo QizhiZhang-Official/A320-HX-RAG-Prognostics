@@ -10,6 +10,7 @@ FILE_PATH = ["data/manuals/21-52-11-R.pdf", "data/manuals/21-52-12-R.pdf"]
 loader = DoclingLoader(file_path=FILE_PATH)
 docs = loader.load()
 
-for d in docs[:3]:
-    print(f"- {d.page_content=}")
-print("...")
+with open('content.txt', 'w', encoding='utf-8') as f:
+    for doc in docs:
+        f.write(doc.page_content)
+        f.write('\n')
