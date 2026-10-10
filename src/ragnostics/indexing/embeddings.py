@@ -1,9 +1,10 @@
-# src/ragnostics/indexing/embeddings.py
-from dataclasses import dataclass
 from collections.abc import Sequence
+from dataclasses import dataclass
 
+import numpy as np
 from langchain_core.embeddings import Embeddings
 from langchain_huggingface import HuggingFaceEmbeddings
+from transformers import AutoTokenizer
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,6 +26,12 @@ class EmbeddingSpec:
             slug += "-l2"
         return slug
 
+    def prefix_passages(self, passages: Sequence[str]) -> list[str]:
+        return [self.passage_prefix + passage for passage in passages]
+
+    def prefix_query(self, query: str) -> str:
+        return self.query_prefix + query
+
 
 class PrefixedEmbeddings(Embeddings):
     def __init__(self, inner: Embeddings, spec: EmbeddingSpec) -> None:
@@ -32,15 +39,10 @@ class PrefixedEmbeddings(Embeddings):
         self.spec = spec
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        prefixed_texts = [self.spec.passage_prefix + text for text in texts]
-        embedded_text = self.inner.embed_documents(prefixed_texts)
-
-        return embedded_text
+        return self.inner.embed_documents(self.spec.prefix_passages(texts))
 
     def embed_query(self, text: str) -> list[float]:
-        embedded_text = self.inner.embed_query(self.spec.query_prefix + text)
-
-        return embedded_text
+        return self.inner.embed_query(self.spec.prefix_query(text))
 
 
 def build_embeddings(spec: EmbeddingSpec, *, device: str) -> Embeddings:
@@ -58,4 +60,39 @@ def build_embeddings(spec: EmbeddingSpec, *, device: str) -> Embeddings:
 
 
 def verify_embeddings(embeddings: Embeddings, spec: EmbeddingSpec) -> None:
-    
+    probe = "heat exchanger leak test procedure"
+    query_vector = embeddings.embed_query(text=probe)
+    document_vector = embeddings.embed_documents(texts=[probe])[0]
+
+    if len(query_vector) != spec.dimension:
+        raise ValueError(
+            f"Dimension not matched: spec.dimension={spec.dimension}, embedded query vector dimension={len(query_vector)}."
+        )
+
+    if len(document_vector) != spec.dimension:
+        raise ValueError(
+            f"Dimension not matched: spec.dimension={spec.dimension}, embedded document vector dimension={len(document_vector)}."
+        )
+
+    if spec.normalize:
+        query_norm = float(np.linalg.norm(query_vector))
+        if abs(query_norm - 1.0) > 1e-3:
+            raise ValueError(
+                f"Not normalised: spec.normalize=True but the query vector has norm {query_norm:.6f}."
+            )
+
+        document_norm = float(np.linalg.norm(document_vector))
+        if abs(document_norm - 1.0) > 1e-3:
+            raise ValueError(
+                f"Not normalised: spec.normalize=True but the document vector has norm {document_norm:.6f}."
+            )
+
+
+def token_lengths(spec: EmbeddingSpec, passages: Sequence[str]) -> list[int]:
+    tokenizer = AutoTokenizer.from_pretrained(
+        pretrained_model_name_or_path=spec.model_id,
+        revision=spec.revision,
+        local_files_only=True,
+    )
+
+    return [len(tokenizer.encode(passage)) for passage in spec.prefix_passages(passages)]
