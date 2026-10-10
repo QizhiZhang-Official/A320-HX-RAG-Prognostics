@@ -1,4 +1,5 @@
 from langchain_core.embeddings import Embeddings
+
 from ragnostics.indexing.embeddings import EmbeddingSpec, PrefixedEmbeddings
 
 
@@ -35,7 +36,7 @@ def test_documents_prefix_is_applied():
 
 
 def test_documents_are_not_mutated():
-    emb, recorder = make_prefixed_embeddings(passage_prefix="passage: ")
+    emb, _ = make_prefixed_embeddings(passage_prefix="passage: ")
     texts = ["abc", "def"]
     emb.embed_documents(texts)
     assert texts == ["abc", "def"]
