@@ -7,3 +7,4 @@ artifacts/
 docker/pgdata/
 tmp/
 data/
+content.txt
