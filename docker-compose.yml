@@ -3,6 +3,7 @@ name: a320-hx-rag-prognostics
 services:
   db:
     image: pgvector/pgvector:pg18-trixie
+    container_name: pgvector
     restart: unless-stopped
     environment:
       POSTGRES_USER: ragnostics
