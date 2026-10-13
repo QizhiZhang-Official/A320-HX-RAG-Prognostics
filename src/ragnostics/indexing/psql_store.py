@@ -1,6 +1,8 @@
 import json
 import os
+
 from pathlib import Path
+from hashlib import sha256
 
 import psycopg
 from pgvector.psycopg import register_vector
@@ -82,7 +84,7 @@ class PostgresChunkStore:
         self._insert_chunk_to_psql()
 
 
-class PostgresVector:
+class PostgresVectorStore:
     def __init__(self) -> None:
         self.spec = EmbeddingSpec()
         self.chunks = None
@@ -99,6 +101,18 @@ class PostgresVector:
                 %(chunk_id)s, %(vector)s
             ) ON CONFLICT (chunk_id) DO UPDATE SET
                 embedding = EXCLUDED.embedding
+        """
+        self.CREATE_INDEX_SQL = """
+            CREATE INDEX IF NOT EXISTS {} ON {}
+            USING hnsw (embedding {})
+            WITH (m = 16, ef_construction = 64)
+        """
+        self.WRITE_MANIFEST_SQL = """
+            INSERT INTO index_manifests (slug, manifest)
+            VALUES (%(slug)s, %(manifest)s)
+            ON CONFLICT (slug) DO UPDATE
+                manifest = EXCLUDED.manifest,
+                built_at = now()
         """
 
     def create_vector_table(self) -> None:
@@ -145,9 +159,48 @@ class PostgresVector:
         connection.commit()
         cursor.close()
         connection.close()
+
+    def create_vector_index(self) -> None:
+        table_name = vector_table_name(slug=self.spec.slug)
+        index_name = table_name + "_hnsw"
+        connection = psycopg.connect(os.environ["DATABASE_URL"])
+        cursor = connection.cursor()
+        cursor.execute(
+            sql.SQL(self.CREATE_INDEX_SQL).format(
+                sql.Identifier(index_name),
+                sql.Identifier(index_name),
+                sql.Identifier(distance_operator_class(spec=self.spec)),
+            )
+        )
+        connection.commit()
+        cursor.close()
+        connection.close()
     
+    # def _generate_manifest(self) -> dict:
+                
+        
+    #     manifest = {
+    #         'slug': self.spec.slug,
+    #         'model_id': self.spec.model_id,
+    #         'revision': self.spec.revision,
+    #         'dimension': self.spec.dimension,
+    #         'distance': self.spec.distance,
+    #         'max_seq_length': self.spec.max_seq_length,
+    #         'query_prefix': self.spec.query_prefix,
+    #         'passage_prefix': self.spec.passage_prefix,
+    #         'chunk_count': len(self.chunks),
+    #         'chunker_hash':
+    #     }
+    
+    # def write_manifest(self) -> None:
+        
+    #     connection = psycopg.connect(os.environ["DATABASE_URL"])
+    #     cursor = connection.cursor()
+        
+
     def run(self) -> None:
         self.create_vector_table()
         self.load_chunks()
         self.embed_chunks_to_vectors()
         self.insert_vectors()
+        self.create_vector_index()
