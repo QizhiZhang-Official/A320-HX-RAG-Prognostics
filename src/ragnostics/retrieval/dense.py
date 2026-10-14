@@ -61,7 +61,7 @@ class DenseRetriever(BaseRetriever):
             {"query_vector": query_vector, "k": self.k},
         )
         for chunk_id, section, title, text, score in self.cursor.fetchall():
-            print(f"{score:.4f}  [{section}] {title}")
+            # print(f"{score:.4f}  [{section}] {title}")
             self.docs.append(
                 Document(
                     page_content=text,
