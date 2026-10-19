@@ -62,3 +62,93 @@ queries:
     query: "electrical continuity test"
     expected_chunk_ids: [c_0006, c_0113]
     note: "两本手册故障隔离表里的电气连续性测试条目"
+
+  - id: q11
+    type: part_number
+    query: "330-811210 是什么零件？"
+    expected_chunk_ids: [c_0107]
+    note: "PHX 详细零件清单 Figure 2：HEADER INLET ASSY；编号索引页只有编号没有名称"
+
+  - id: q12
+    type: part_number
+    query: "32-811678 是什么零件？"
+    expected_chunk_ids: [c_0106]
+    note: "PHX 详细零件清单 Figure 1：BAND-NUT CAPTIVE"
+
+  - id: q13
+    type: part_number
+    query: "81212-010 是什么零件？"
+    expected_chunk_ids: [c_0253, c_0254]
+    note: "MHX 两页详细零件清单都列出该件号（WELDMENT-MACHINED），两个答案都成立"
+
+  - id: q14
+    type: part_number
+    query: "47-821210-100 属于哪个特殊工具？"
+    expected_chunk_ids: [c_0243]
+    note: "MHX 特殊工具表 T02 的 ADAPTER"
+
+  - id: q15
+    type: part_number
+    query: "76-811210-101 属于哪个特殊工具？"
+    expected_chunk_ids: [c_0095]
+    note: "PHX 特殊工具表 T02 的 BLANKING CAP"
+
+  - id: q16
+    type: semantic_en
+    query: "What should be done when a bushing on the primary heat exchanger is damaged or missing?"
+    expected_chunk_ids: [c_0005]
+    note: "PHX 故障隔离表：衬套损坏时的纠正措施"
+
+  - id: q17
+    type: semantic_en
+    query: "Which special tool is used to blank off the primary heat exchanger during repair?"
+    expected_chunk_ids: [c_0095]
+    note: "PHX 特殊工具表：T01/T02 BLANKING CAP"
+
+  - id: q18
+    type: semantic_en
+    query: "Which aerospace standards is the manual written in accordance with?"
+    expected_chunk_ids: [c_0001, c_0108]
+    note: "两本手册的 Introduction 都写明 ATA iSpec 2200 与 ASD-STE100"
+
+  - id: q19
+    type: semantic_en
+    query: "What should be done if the internal leakage test is out of tolerance on the main heat exchanger?"
+    expected_chunk_ids: [c_0112]
+    note: "MHX 故障隔离表：内部泄漏超标对应芯体损坏与修芯"
+
+  - id: q20
+    type: semantic_zh
+    query: "手册的编写依据是哪些航空标准？"
+    expected_chunk_ids: [c_0001, c_0108]
+    note: "与 q18 同一事实的中文问法"
+
+  - id: q21
+    type: semantic_zh
+    query: "主热交换器内部泄漏测试超标时应该怎么办？"
+    expected_chunk_ids: [c_0112]
+    note: "与 q19 同一事实的中文问法"
+
+  - id: q22
+    type: semantic_zh
+    query: "主热交换器手册里的特殊工具 T01 是什么？"
+    expected_chunk_ids: [c_0243]
+    note: "MHX 的 T01 是 ADAPTER，而 PHX 的 T01 是 BLANKING CAP，需要按手册区分"
+
+  - id: q23
+    type: term
+    query: "Alpha/Numeric Index"
+    expected_chunk_ids: [c_0104, c_0252]
+    note: "该词组只出现在标题里，正文中没有；考验标题是否参与索引"
+
+  - id: q24
+    type: term
+    query: "Table 9001"
+    expected_chunk_ids: [c_0095, c_0243]
+    note: "两本手册的特殊工具表编号"
+
+  - id: q25
+    type: term
+    query: "Table INTRO-2"
+    expected_chunk_ids: [c_0002, c_0003, c_0109, c_0110]
+    note: "两本手册各两页的验证状态表"
