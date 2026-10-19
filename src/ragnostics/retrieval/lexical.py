@@ -1,21 +1,22 @@
-from langchain_core.retrievers import BaseRetriever
-from rank_bm25 import BM25Okapi
-from langchain_core.documents import Document
-from psycopg import sql
-
 import os
+
 import psycopg
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
+from psycopg import sql
+from pydantic import Field
+from rank_bm25 import BM25Okapi
 
 
 class LexicalRetriever(BaseRetriever):
     k: int = 5
-    docs: list[Document] = []
+    docs: list[Document] = Field(default_factory=list)
     k1: float = 1.5
     b: float = 0.75
     connection: None = None
     cursor: None = None
     bm25: BM25Okapi | None = None
-    chunks: list = []
+    chunks: list = Field(default_factory=list)
     query: str = ""
     RETRIEVER_SQL: str = """
         SELECT chunk_id, section, title, embedding_text FROM chunks

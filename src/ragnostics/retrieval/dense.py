@@ -1,10 +1,12 @@
-from langchain_core.retrievers import BaseRetriever
-from langchain_core.documents import Document
-import psycopg
 import os
-from pgvector.psycopg import register_vector
+
+import psycopg
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
 from pgvector import Vector
+from pgvector.psycopg import register_vector
 from psycopg import sql
+
 from ragnostics.indexing.embeddings import EmbeddingSpec, build_embeddings
 from ragnostics.indexing.psql_store import vector_table_name
 

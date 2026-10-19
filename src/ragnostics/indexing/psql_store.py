@@ -1,8 +1,6 @@
 import json
 import os
-
 from pathlib import Path
-from hashlib import sha256
 
 import psycopg
 from pgvector.psycopg import register_vector

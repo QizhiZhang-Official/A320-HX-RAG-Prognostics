@@ -1,4 +1,5 @@
 from langchain_core.retrievers import BaseRetriever
+
 from ragnostics.retrieval.fusion import FusionModule
 
 
