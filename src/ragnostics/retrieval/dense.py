@@ -11,7 +11,6 @@ from ragnostics.indexing.psql_store import vector_table_name
 
 class DenseRetriever(BaseRetriever):
     k: int = 5
-    docs: list[Document] = []
     device: str = "cpu"
     connection: None = None
     cursor: None = None
@@ -60,9 +59,9 @@ class DenseRetriever(BaseRetriever):
             sql.SQL(self.RETRIEVER_SQL).format(sql.Identifier(self.table_name)),
             {"query_vector": query_vector, "k": self.k},
         )
+        documents = []
         for chunk_id, section, title, text, score in self.cursor.fetchall():
-            # print(f"{score:.4f}  [{section}] {title}")
-            self.docs.append(
+            documents.append(
                 Document(
                     page_content=text,
                     metadata={
@@ -73,4 +72,4 @@ class DenseRetriever(BaseRetriever):
                     },
                 )
             )
-        return self.docs[: self.k]
+        return documents[: self.k]

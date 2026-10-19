@@ -1,0 +1,64 @@
+# 检索评估查询集。
+# expected_chunk_ids 的含义：能真正回答该问题的 chunk，而不是仅仅包含关键词的 chunk。
+# type 取值：part_number | semantic_en | semantic_zh | term
+
+queries:
+  - id: q01
+    type: part_number
+    query: "753A0000-03 是什么零件？"
+    expected_chunk_ids: [c_0105]
+    note: "IPL 详细零件清单 Figure 1：753A0000-03 = EXCHANGER-PRIMARY HEAT"
+
+  - id: q02
+    type: part_number
+    query: "754A0000-03 是什么零件？"
+    expected_chunk_ids: [c_0253]
+    note: "IPL 详细零件清单 Figure 1：754A0000-03 = EXCHANGER-MAIN HEAT"
+
+  - id: q03
+    type: part_number
+    query: "EM87100060A-05 属于哪个特殊工具组件？"
+    expected_chunk_ids: [c_0095]
+    note: "PHX 特殊工具 T01A 的组成件；该编号只在 PHX 手册出现"
+
+  - id: q04
+    type: semantic_en
+    query: "For the primary heat exchanger, what should be done if the hot air circuit is clogged?"
+    expected_chunk_ids: [c_0006]
+    note: "PHX 故障隔离表：热空气回路堵塞时的纠正措施"
+
+  - id: q05
+    type: semantic_en
+    query: "For the main heat exchanger, what should be done if the hot air circuit is clogged?"
+    expected_chunk_ids: [c_0113]
+    note: "MHX 故障隔离表：热空气回路堵塞时的纠正措施，与 PHX 的答案不同"
+
+  - id: q06
+    type: semantic_en
+    query: "Which test can reveal a damaged core in the primary heat exchanger?"
+    expected_chunk_ids: [c_0005]
+    note: "PHX 故障隔离表：Internal Leakage Test 对应 core damaged"
+
+  - id: q07
+    type: semantic_zh
+    query: "初级热交换器的油漆涂层起泡了应该怎么处理？"
+    expected_chunk_ids: [c_0005]
+    note: "PHX 故障隔离表的视觉检查条目"
+
+  - id: q08
+    type: semantic_zh
+    query: "一磅力每平方英寸等于多少千帕？"
+    expected_chunk_ids: [c_0004, c_0111]
+    note: "两本手册的单位换算表都给出 1 psi = 6.8948 kPa"
+
+  - id: q09
+    type: term
+    query: "Consumable Materials Table 9002"
+    expected_chunk_ids: [c_0096, c_0244]
+    note: "两本手册各有一张消耗材料表"
+
+  - id: q10
+    type: term
+    query: "electrical continuity test"
+    expected_chunk_ids: [c_0006, c_0113]
+    note: "两本手册故障隔离表里的电气连续性测试条目"
