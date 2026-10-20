@@ -8,3 +8,4 @@ docker/pgdata/
 tmp/
 data/
 content.txt
+rag-langchain-langgraph-gleaming-hartmanis.md
