@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A320 手册问答</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: system-ui, "Segoe UI", sans-serif;
+      background: #0f1115;
+      color: #e6e6e6;
+    }
+
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #2a2f3a;
+      font-weight: 600;
+    }
+
+    #messages {
+      flex: 1;
+      min-height: 0;
+      /* 让消息区能收缩并滚动 */
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msg {
+      max-width: 760px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .msg.assistant {
+      align-self: flex-start;
+      background: #1b1f27;
+      border: 1px solid #2a2f3a;
+    }
+
+    .sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .source {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #111827;
+      border: 1px solid #374151;
+      color: #9ca3af;
+    }
+
+    #composer {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid #2a2f3a;
+    }
+
+    #question {
+      flex: 1;
+      resize: none;
+      min-height: 48px;
+      max-height: 160px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #0b0d12;
+      color: #e6e6e6;
+      font: inherit;
+    }
+
+    #send {
+      padding: 0 20px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: #fff;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .status.ok {
+      color: #22c55e;
+    }
+
+    .status.error {
+      color: #ef4444;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <span>A320 热交换器手册问答</span>
+    <span id="status" class="status">连接中...</span>
+  </header>
+
+  <main id="messages">
+    <article class="msg user">热交换器泄露测试的压力是多少？</article>
+
+    <article class="msg assistant">
+      根据 21-52-11 的泄漏测试章节，测试压力为 7.2–7.4 bar。来源：c_0010。
+      <div class="sources">
+        <span class="source">c_0010 · 21-52-11 · Leak Test</span>
+        <span class="source">c_0011 · 21-52-11 · Test Procedure</span>
+      </div>
+    </article>
+  </main>
+
+  <form id="composer" autocomplete="off">
+    <textarea id="question" placeholder="输入问题..." autocomplete="off"></textarea>
+    <button id="send" type="submit">发送</button>
+  </form>
+
+  <script>
+    const form = document.querySelector("#composer");
+    const input = document.querySelector("#question");
+    const messages = document.querySelector("#messages");
+
+    function addMessage(role, text, sources = []) {
+      const article = document.createElement("article");
+      article.className = `msg ${role}`;
+
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      article.appendChild(paragraph);
+
+      if (sources.length > 0) {
+        const box = document.createElement("div");
+        box.className = "sources";
+
+        for (const source of sources) {
+          const span = document.createElement("span");
+          span.className = "source";
+          span.textContent = source;
+          box.appendChild(span);
+        }
+
+        article.appendChild(box);
+      }
+
+      messages.appendChild(article);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    form.addEventListener(
+      "submit",
+      (event) => {
+        event.preventDefault();
+
+        const question = input.value.trim();
+        if (question === "") {
+          return;
+        }
+
+        addMessage("user", question);
+        input.value = "";
+        input.focus();
+
+        setTimeout(
+          () => {
+            addMessage(
+              "assistant",
+              "(假答案：这里以后从/api/ask获取)",
+              ["c_0010 21-52-11 Leak Test"]
+            );
+          },
+          600
+        );
+      }
+    );
+
+    input.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.requestSubmit();
+        }
+      }
+    );
+
+    async function checkHealth() {
+      const status = document.querySelector("#status");
+
+      try {
+        const response = await fetch("/api/health");
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        status.textContent = data.status === "ok" ? "服务正常" : "状态异常";
+        status.className = data.status === "ok" ? "status ok" : "status error";
+      } catch (error) {
+        status.textContent = "服务不可用";
+        status.className = "status error";
+        console.error(error);
+      }
+    }
+
+    checkHealth();
+  </script>
+</body>
+
+</html>

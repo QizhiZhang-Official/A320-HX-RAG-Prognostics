@@ -14,10 +14,12 @@ class Settings(BaseSettings):
     )
     
     database_url: str
+    
     vllm_base_url: str = 'http://127.0.0.1:8001/v1'
     vllm_model: str =  '/model'
     vllm_api_key: str = 'EMPTY'
-    api_host: str = '127.0.0.1'
+    
+    api_host: str = '0.0.0.0'
     api_port: int = 8000
 
 @lru_cache
